@@ -1,0 +1,38 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v3.4.0
+  hooks:
+    - id: check-json
+    - id: check-merge-conflict
+    - id: check-yaml
+    - id: check-added-large-files
+    - id: end-of-file-fixer
+      exclude: (^doc\/)
+    - id: mixed-line-ending
+      exclude: (^doc\/)
+- repo: local
+  hooks:
+    - id: golangci-lint
+      name: Check Go files (golangci-lint)
+      language: system
+      entry: bash -c 'cd 2021 && golangci-lint run'
+      pass_filenames: false
+      types: [go]
+      files: ^2021/
+- repo: local
+  hooks:
+    - id: go-mod-tidy
+      name: Check Go dependencies (go mod tidy)
+      language: system
+      entry: bash -c 'cd 2021 && go mod tidy'
+- repo: local
+  hooks:
+    - id: go-unit-tests
+      name: Run Go tests (go test)
+      language: system
+      entry: bash -c 'cd 2021 && go test -race -failfast ./...'
+      pass_filenames: false
+      types: [go]
+      files: ^2021/
