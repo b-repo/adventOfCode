@@ -41,3 +41,37 @@ func ReadStringFileAndSplitByLine(fname string) (strs []string, err error) {
 
 	return strings.Split(string(b), "\n"), nil
 }
+
+func ReadByteFileAndSplitByLine(fname string) (bytes []byte, err error) {
+	b, err := ioutil.ReadFile(fname)
+	if err != nil {
+		return nil, err
+	}
+	d := strings.Split(string(b), "\n")
+
+	r := make([]byte, len(d))
+
+	for j := range d {
+		i, err := strconv.ParseInt(d[j], 2, 32)
+		if err != nil {
+			return nil, err
+		}
+		r = append(r, byte(i))
+	}
+
+	return r, nil
+}
+
+func Read2DStringSliceFile(fname string) ([][]string, error) {
+	d, err := ReadStringFileAndSplitByLine(fname)
+	if err != nil {
+		return nil, err
+	}
+
+	r := make([][]string, 0)
+	for i := range d {
+		r = append(r, strings.Split(d[i], ""))
+	}
+
+	return r, nil
+}
