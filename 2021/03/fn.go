@@ -10,8 +10,7 @@ func ReadEnergyConsumption(data2d [][]string) EnergyConsumption {
 	var e string
 
 	for i := 0; i < len(data2d[0]); i++ {
-		c0, c1 := count(data2d, i)
-		if c0 > c1 {
+		if !count(data2d, i) {
 			g += "0"
 			e += "1"
 		} else {
@@ -51,9 +50,9 @@ func ReadLifeSupportRating(data2d [][]string) LifeSupportRating {
 	}
 }
 
-func count(data2d [][]string, index int) (float64, float64) {
-	c0 := 0.
-	c1 := 0.
+func count(data2d [][]string, index int) bool {
+	var c0, c1 int
+
 	for j := 0; j < len(data2d); j++ {
 		if data2d[j][index] == "1" {
 			c1++
@@ -62,7 +61,7 @@ func count(data2d [][]string, index int) (float64, float64) {
 		}
 	}
 
-	return c0, c1
+	return c0 < c1
 }
 
 func getO2GeneratorRate(working2d [][]string, c int) []string {
@@ -79,8 +78,7 @@ func getO2GeneratorRate(working2d [][]string, c int) []string {
 
 	m := "0"
 
-	c0, c1 := count(working2d, c)
-	if c0 < c1 {
+	if count(working2d, c) {
 		m = "1"
 	}
 
@@ -103,8 +101,7 @@ func getCO2ScrubberRate(working2d [][]string, c int) []string {
 
 	m := "1"
 
-	c0, c1 := count(working2d, c)
-	if c0 < c1 {
+	if count(working2d, c) {
 		m = "0"
 	}
 

@@ -31,10 +31,7 @@ func TestCount(t *testing.T) {
 		panic(err.Error())
 	}
 
-	c0, c1 := count(d, 0)
-
-	assert.Equal(t, c0, 5.)
-	assert.Equal(t, c1, 7.)
+	assert.True(t, count(d, 0))
 }
 
 func TestReadLifeSupportRating(t *testing.T) {
