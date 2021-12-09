@@ -102,3 +102,29 @@ func Read2DStringSliceFile(fname string) ([][]string, error) {
 
 	return r, nil
 }
+
+func Read2DIntSliceFile(fname string) ([][]int, error) {
+	d, err := ReadStringFileAndSplitByLine(fname)
+	if err != nil {
+		return nil, err
+	}
+
+	r := make([][]int, 0)
+
+	for i := range d {
+		ys := strings.Split(d[i], "")
+		col := make([]int, 0)
+		for j := range ys {
+			n, err := strconv.Atoi(ys[j])
+			if err != nil {
+				panic(err.Error())
+			}
+
+			col = append(col, n)
+		}
+
+		r = append(r, col)
+	}
+
+	return r, nil
+}
