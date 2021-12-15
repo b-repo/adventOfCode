@@ -13,34 +13,12 @@ func ParseCavernFromFile(fname string) (*dijkstra.Graph, map[Coordinate]int, int
 
 	g := dijkstra.NewGraph()
 	m := map[Coordinate]int{}
-	n := 0
 
-	for i := range d {
-		for j := range d[i] {
-			m[Coordinate{i, j}] = n
-			g.AddVertex(n)
-			n++
-		}
-	}
+	addVertex(len(d), m, g)
 
-	for i := range d {
-		for j := range d[i] {
-			if i > 0 {
-				g.AddArc(m[Coordinate{i - 1, j}], m[Coordinate{i, j}], int64(d[i][j]))
-			}
-
-			if i < len(d[i])-1 {
-				g.AddArc(m[Coordinate{i + 1, j}], m[Coordinate{i, j}], int64(d[i][j]))
-			}
-
-			if j > 0 {
-				g.AddArc(m[Coordinate{i, j - 1}], m[Coordinate{i, j}], int64(d[i][j]))
-			}
-
-			if j < len(d[i])-1 {
-				g.AddArc(m[Coordinate{i, j + 1}], m[Coordinate{i, j}], int64(d[i][j]))
-			}
-		}
+	graph, m2, i, err2 := addArcs(d, g, m)
+	if err2 != nil {
+		return graph, m2, i, err2
 	}
 
 	return g, m, len(d), nil
@@ -54,15 +32,8 @@ func ParseWholeCavernFromFile(fname string) (*dijkstra.Graph, map[Coordinate]int
 
 	g := dijkstra.NewGraph()
 	m := map[Coordinate]int{}
-	n := 0
 
-	for i := 0; i < 5*len(d); i++ {
-		for j := 0; j < 5*len(d); j++ {
-			m[Coordinate{i, j}] = n
-			g.AddVertex(n)
-			n++
-		}
-	}
+	addVertex(5*len(d), m, g)
 
 	bigD := make([][]int, 0, len(d)*5)
 	for i := 0; i < len(d)*5; i++ {
@@ -108,25 +79,56 @@ func ParseWholeCavernFromFile(fname string) (*dijkstra.Graph, map[Coordinate]int
 		}
 	}
 
-	for i := range bigD {
-		for j := range bigD[i] {
-			if i > 0 {
-				g.AddArc(m[Coordinate{i - 1, j}], m[Coordinate{i, j}], int64(bigD[i][j]))
-			}
-
-			if i < len(bigD[i])-1 {
-				g.AddArc(m[Coordinate{i + 1, j}], m[Coordinate{i, j}], int64(bigD[i][j]))
-			}
-
-			if j > 0 {
-				g.AddArc(m[Coordinate{i, j - 1}], m[Coordinate{i, j}], int64(bigD[i][j]))
-			}
-
-			if j < len(bigD[i])-1 {
-				g.AddArc(m[Coordinate{i, j + 1}], m[Coordinate{i, j}], int64(bigD[i][j]))
-			}
-		}
+	graph, m2, i, err2 := addArcs(bigD, g, m)
+	if err2 != nil {
+		return graph, m2, i, err2
 	}
 
 	return g, m, len(bigD), nil
+}
+
+func addVertex(len int, m map[Coordinate]int, g *dijkstra.Graph) {
+	n := 0
+	for i := 0; i < len; i++ {
+		for j := 0; j < len; j++ {
+			m[Coordinate{i, j}] = n
+			g.AddVertex(n)
+			n++
+		}
+	}
+}
+
+func addArcs(d [][]int, g *dijkstra.Graph, m map[Coordinate]int) (*dijkstra.Graph, map[Coordinate]int, int, error) {
+	for i := range d {
+		for j := range d[i] {
+			if i > 0 {
+				err := g.AddArc(m[Coordinate{i - 1, j}], m[Coordinate{i, j}], int64(d[i][j]))
+				if err != nil {
+					return nil, nil, 0, err
+				}
+			}
+
+			if i < len(d[i])-1 {
+				err := g.AddArc(m[Coordinate{i + 1, j}], m[Coordinate{i, j}], int64(d[i][j]))
+				if err != nil {
+					return nil, nil, 0, err
+				}
+			}
+
+			if j > 0 {
+				err := g.AddArc(m[Coordinate{i, j - 1}], m[Coordinate{i, j}], int64(d[i][j]))
+				if err != nil {
+					return nil, nil, 0, err
+				}
+			}
+
+			if j < len(d[i])-1 {
+				err := g.AddArc(m[Coordinate{i, j + 1}], m[Coordinate{i, j}], int64(d[i][j]))
+				if err != nil {
+					return nil, nil, 0, err
+				}
+			}
+		}
+	}
+	return nil, nil, 0, nil
 }
